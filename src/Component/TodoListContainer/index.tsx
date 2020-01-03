@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Props } from 'react';
 import Styled from 'styled-components/native';
 import { Dimensions, StyleSheet, TouchableOpacity} from 'react-native';
 
@@ -47,7 +47,11 @@ const ActionContainer = Styled.View`
 const Emoji = Styled.Text`
 `;
 
-const TodoListCntainer = () => {
+interface Props {
+  text: string;
+}
+
+const TodoListCntainer = ({text}: Props) => {
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   return (
@@ -57,7 +61,7 @@ const TodoListCntainer = () => {
               onPress={() => setIsCompleted(!isCompleted)}>
               <Circle isCompleted={isCompleted} />
             </TouchableOpacity>
-            <Label isCompleted={isCompleted}>Todo</Label>
+            <Label isCompleted={isCompleted}>{text}</Label>
           </Column>
           {isEditing ? (
             <Action>

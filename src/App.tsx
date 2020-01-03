@@ -59,7 +59,7 @@ const App = () => {
           autoCorrect={false}
         />
         <ScrollView>
-          <TodoListContainer />
+          <TodoListContainer text={'ToDo'}/>
         </ScrollView>
       </Card>
     </Container>
