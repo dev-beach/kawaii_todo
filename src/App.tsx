@@ -45,6 +45,11 @@ const ScrollView = Styled.ScrollView.attrs(() => ({
 
 const App = () => {
   const [newTodo, setTodo] = useState<string>('');
+  const _AddTodo = () => {
+    if (newTodo !== "") {
+      setTodo("");
+    }
+  };
   return (
     <Container>
       <StatusBar barStyle="light-content" />
@@ -57,6 +62,7 @@ const App = () => {
           placeholderTextColor={'#999'}
           returnKeyType={'done'}
           autoCorrect={false}
+          onSubmitEditing={() => _AddTodo()}
         />
         <ScrollView>
           <TodoListContainer text={'ToDo'}/>

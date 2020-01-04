@@ -1,6 +1,6 @@
-import React, { useState, Props } from 'react';
+import React, { useState} from 'react';
 import Styled from 'styled-components/native';
-import { Dimensions, StyleSheet, TouchableOpacity} from 'react-native';
+import { StyleSheet, TouchableOpacity} from 'react-native';
 
 const Container = Styled.View`
   width: 95%;
@@ -47,13 +47,30 @@ const ActionContainer = Styled.View`
 const Emoji = Styled.Text`
 `;
 
+const Input = Styled.TextInput`
+    margin-vertical: 20px;
+    padding-bottom: 5px;
+`;
+
 interface Props {
   text: string;
 }
 
+
 const TodoListCntainer = ({text}: Props) => {
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [toDoValue, setToDoValue] = useState<string>("");
+  const _startEditing = () => {
+    setIsEditing(true);
+    setToDoValue(text);
+  };
+  const _finishEditing = () => {
+    setIsEditing(false);
+  };
+  const _controllInput = () => {
+    setToDoValue(text);
+  };
   return (
         <Container>
           <Column>
@@ -61,12 +78,22 @@ const TodoListCntainer = ({text}: Props) => {
               onPress={() => setIsCompleted(!isCompleted)}>
               <Circle isCompleted={isCompleted} />
             </TouchableOpacity>
-            <Label isCompleted={isCompleted}>{text}</Label>
+            {isEditing ? (
+              <Input 
+                multiline={true}
+                onChangeText={() => _controllInput()}
+                returnKeyType={"done"}
+                onBlur={() => _finishEditing()}>
+                <Label isCompleted={isCompleted}>{toDoValue}</Label>
+              </Input>
+            ) : (
+              <Label isCompleted={isCompleted}>{text}</Label>
+            )}
           </Column>
           {isEditing ? (
             <Action>
               <TouchableOpacity
-                onPressOut={() => setIsEditing(false)}>
+                onPressOut={() => _finishEditing()}>
                 <ActionContainer>
                   <Emoji>✅</Emoji>
                 </ActionContainer>
@@ -75,7 +102,7 @@ const TodoListCntainer = ({text}: Props) => {
           ) : (
             <Action>
               <TouchableOpacity
-                onPressOut={() => setIsEditing(true)}>
+                onPressOut={() => _startEditing()}>
                 <ActionContainer>
                   <Emoji>✏️</Emoji>
                 </ActionContainer>
