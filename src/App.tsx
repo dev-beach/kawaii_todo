@@ -45,10 +45,22 @@ const ScrollView = Styled.ScrollView.attrs(() => ({
 }))``;
 
 const App = () => {
-  const [newTodo, setTodo] = useState<string>('');
+  const [newToDo, setToDo] = useState<string>('');
+  const [toDos, setTodos] = useState<{}>({});
   const _AddTodo = () => {
-    if (newTodo !== "") {
-      setTodo("");
+    if (newToDo !== "") {
+      setToDo("");
+      const ID = uuidv1();
+      const newToDoObject = {
+        [ID]: {
+          id: ID,
+          isCompleted: false,
+          text: newToDo,
+          createdAt: Date.now()
+        }
+      };
+      let newToDos = {...toDos, ...newToDoObject};
+      setTodos(newToDos);
     }
   };
   return (
@@ -58,15 +70,15 @@ const App = () => {
       <Card>
         <TextInput
           placeholder={"New To Do"} 
-          onChangeText={text => setTodo(text)}
-          value={newTodo} 
+          onChangeText={text => setToDo(text)}
+          value={newToDo} 
           placeholderTextColor={'#999'}
           returnKeyType={'done'}
           autoCorrect={false}
           onSubmitEditing={() => _AddTodo()}
         />
         <ScrollView>
-          <TodoListContainer text={'ToDo'}/>
+          {Object.values(toDos).map(toDo => <TodoListContainer text={toDo.text}/>)}
         </ScrollView>
       </Card>
     </Container>
