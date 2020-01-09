@@ -1,4 +1,4 @@
-import React, { useState, Component } from 'react';
+import React, { useState, Component, useEffect } from 'react';
 import Styled from 'styled-components/native';
 import { StatusBar} from 'react-native';
 import TodoListContainer from './Component/TodoListContainer';
@@ -63,6 +63,12 @@ const App = () => {
       setTodos(newToDos);
     }
   };
+  const _deleteToDo = (id: string): void => {
+    var _toDos = {...toDos};
+    delete _toDos[id];
+    setTodos(_toDos);
+  };
+
   return (
     <Container>
       <StatusBar barStyle="light-content" />
@@ -78,7 +84,12 @@ const App = () => {
           onSubmitEditing={() => _AddTodo()}
         />
         <ScrollView>
-          {Object.values(toDos).map(toDo => <TodoListContainer text={toDo.text}/>)}
+          {Object.values(toDos).map(toDo => (
+            <TodoListContainer 
+              id={toDo.id} 
+              text={toDo.text} 
+              deleteToDo={_deleteToDo}/>
+          ))}
         </ScrollView>
       </Card>
     </Container>

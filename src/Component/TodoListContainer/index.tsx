@@ -32,8 +32,7 @@ const Circle = Styled.View`
 const Column = Styled.View`
   flexDirection: row;
   alignItems: center;
-  // width: 50%;
-  justifyContent: space-between;
+  width: 50%;
 `;
 
 const Action = Styled.View`
@@ -53,11 +52,13 @@ const Input = Styled.TextInput`
 `;
 
 interface Props {
+  id: string;
   text: string;
+  deleteToDo: Function;
 }
 
 
-const TodoListCntainer = ({text}: Props) => {
+const TodoListCntainer = ({id, text, deleteToDo}: Props) => {
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [toDoValue, setToDoValue] = useState<string>("");
@@ -107,7 +108,7 @@ const TodoListCntainer = ({text}: Props) => {
                   <Emoji>✏️</Emoji>
                 </ActionContainer>
               </TouchableOpacity>
-              <TouchableOpacity>
+              <TouchableOpacity onPressOut={event => {deleteToDo(id);}}>
                 <ActionContainer>
                   <Emoji>❌</Emoji>
                 </ActionContainer>
