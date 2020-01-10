@@ -1,4 +1,4 @@
-import React, { useState, Component, useEffect } from 'react';
+import React, { useState } from 'react';
 import Styled from 'styled-components/native';
 import { StatusBar} from 'react-native';
 import TodoListContainer from './Component/TodoListContainer';
@@ -68,6 +68,27 @@ const App = () => {
     delete _toDos[id];
     setTodos(_toDos);
   };
+  const _uncompleteToDo = (id: string) => {
+    const newToDos = {
+      ...toDos,
+      [id]: { ...toDos[id], isCompleted: false }
+    };
+    setTodos(newToDos);
+  };
+  const _completeToDo = (id: string) => {
+    const newToDos = {
+      ...toDos,
+      [id]: { ...toDos[id], isCompleted: true }
+    };
+    setTodos(newToDos);
+  };
+  const _updateToDo = (id: string, text: string) => {
+    const newToDos = {
+      ...toDos,
+      [id]: { ...toDos[id], text: text }
+    };
+    setTodos(newToDos);
+  };
 
   return (
     <Container>
@@ -88,7 +109,12 @@ const App = () => {
             <TodoListContainer 
               id={toDo.id} 
               text={toDo.text} 
-              deleteToDo={_deleteToDo}/>
+              isCompleted={toDo.isCompleted} 
+              deleteToDo={_deleteToDo}
+              uncompleteToDo={_uncompleteToDo}
+              completeToDo={_completeToDo}
+              updateToDo={_updateToDo}
+            />
           ))}
         </ScrollView>
       </Card>

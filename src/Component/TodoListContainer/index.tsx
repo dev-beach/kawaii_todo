@@ -54,12 +54,14 @@ const Input = Styled.TextInput`
 interface Props {
   id: string;
   text: string;
+  isCompleted: boolean;
   deleteToDo: Function;
+  uncompleteToDo: Function;
+  completeToDo: Function;
+  updateToDo: Function;
 }
 
-
-const TodoListCntainer = ({id, text, deleteToDo}: Props) => {
-  const [isCompleted, setIsCompleted] = useState<boolean>(false);
+const TodoListCntainer = ({id, text, isCompleted, deleteToDo, uncompleteToDo, completeToDo, updateToDo}: Props) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [toDoValue, setToDoValue] = useState<string>("");
   const _startEditing = () => {
@@ -67,22 +69,30 @@ const TodoListCntainer = ({id, text, deleteToDo}: Props) => {
     setToDoValue(text);
   };
   const _finishEditing = () => {
+    updateToDo(id, toDoValue);
     setIsEditing(false);
   };
-  const _controllInput = () => {
-    setToDoValue(text);
+  const _controllInput = (inputText:string) => {
+    setToDoValue(inputText);
+  };
+  const _toggleComlete = () => {
+    if (isCompleted) {
+      uncompleteToDo(id);
+    } else {
+      completeToDo(id);
+    }
   };
   return (
         <Container>
           <Column>
-            <TouchableOpacity 
-              onPress={() => setIsCompleted(!isCompleted)}>
+            <TouchableOpacity
+              onPress={() => _toggleComlete()}>
               <Circle isCompleted={isCompleted} />
             </TouchableOpacity>
             {isEditing ? (
               <Input 
                 multiline={true}
-                onChangeText={() => _controllInput()}
+                onChangeText={(inputText) => _controllInput(inputText)}
                 returnKeyType={"done"}
                 onBlur={() => _finishEditing()}>
                 <Label isCompleted={isCompleted}>{toDoValue}</Label>
