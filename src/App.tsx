@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Styled from 'styled-components/native';
-import { StatusBar} from 'react-native';
+import { StatusBar, AsyncStorage} from 'react-native';
 import TodoListContainer from './Component/TodoListContainer';
 import uuidv1 from 'uuid/v1';
 
@@ -46,7 +46,7 @@ const ScrollView = Styled.ScrollView.attrs(() => ({
 
 const App = () => {
   const [newToDo, setToDo] = useState<string>('');
-  const [toDos, setTodos] = useState<{}>({});
+  const [toDos, setTodos] = useState<object>({});
   const _AddTodo = () => {
     if (newToDo !== "") {
       setToDo("");
@@ -61,12 +61,14 @@ const App = () => {
       };
       let newToDos = {...toDos, ...newToDoObject};
       setTodos(newToDos);
+      _saveToDos(newToDos);
     }
   };
   const _deleteToDo = (id: string): void => {
     var _toDos = {...toDos};
     delete _toDos[id];
     setTodos(_toDos);
+    _saveToDos(_toDos);
   };
   const _uncompleteToDo = (id: string) => {
     const newToDos = {
@@ -74,6 +76,7 @@ const App = () => {
       [id]: { ...toDos[id], isCompleted: false }
     };
     setTodos(newToDos);
+    _saveToDos(newToDos.toDos);
   };
   const _completeToDo = (id: string) => {
     const newToDos = {
@@ -81,6 +84,7 @@ const App = () => {
       [id]: { ...toDos[id], isCompleted: true }
     };
     setTodos(newToDos);
+    _saveToDos(newToDos.toDos);
   };
   const _updateToDo = (id: string, text: string) => {
     const newToDos = {
@@ -88,7 +92,27 @@ const App = () => {
       [id]: { ...toDos[id], text: text }
     };
     setTodos(newToDos);
+    _saveToDos(newToDos.toDos);
   };
+  const _saveToDos = (newToDos: object) => {
+    const saveToDos = AsyncStorage.setItem("toDos", JSON.stringify(newToDos));
+  };
+  const _loadTodos = async() => {
+    try {
+      const toDos = await AsyncStorage.getItem("toDos");
+      if (toDos) {
+        const parsedToDos = JSON.parse(toDos);
+        setTodos(parsedToDos);
+      } else {
+        setTodos({});
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    _loadTodos();
+  });
 
   return (
     <Container>
