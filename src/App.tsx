@@ -24,12 +24,7 @@ const Card = Styled.View`
   background-color: white;
   width: 90%;
   border-radius: 5;
-  shadow-color: rgb(50, 50,50);
-  shadow-opacity: 0.8;
-  shadow-radius: 5;
-  shadow-offset: {
-    width: -1, height: 0
-  };
+  box-shadow: 0 -1px 5px rgba(50, 50, 50, 0.8);
 `;
 
 const TextInput = Styled.TextInput`

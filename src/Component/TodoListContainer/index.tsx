@@ -43,15 +43,10 @@ const Action = Styled.View`
   flex-direction: row;
 `;
 
-const ActionContainer = Styled.View`
-  margin: 10px;
-`;
-const Emoji = Styled.Text`
-`;
-
 const Input = Styled.TextInput`
     margin: 20px 0;
     padding-bottom: 5px;
+    background: red;
 `;
 
 interface Props {
