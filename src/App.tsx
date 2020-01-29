@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import Styled from 'styled-components/native';
-import { StatusBar, AsyncStorage} from 'react-native';
+import {StatusBar} from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 import TodoListContainer from './Component/TodoListContainer';
 import uuidv1 from 'uuid/v1';
 
@@ -23,12 +24,7 @@ const Card = Styled.View`
   background-color: white;
   width: 90%;
   border-radius: 5;
-  shadow-color: rgb(50, 50,50);
-  shadow-opacity: 0.8;
-  shadow-radius: 5;
-  shadow-offset: {
-    width: -1, height: 0
-  };
+  box-shadow: 0 -1px 5px rgba(50, 50, 50, 0.8);
 `;
 
 const TextInput = Styled.TextInput`
@@ -44,62 +40,67 @@ const ScrollView = Styled.ScrollView.attrs(() => ({
   },
 }))``;
 
+interface ITodos {
+  [key: string]: {
+    id: string;
+    isCompleted: boolean;
+    text: string;
+    createdAt: Number;
+  };
+}
 const App = () => {
   const [newToDo, setToDo] = useState<string>('');
-  const [toDos, setTodos] = useState<object>({});
-  const _AddTodo = () => {
-    if (newToDo !== "") {
-      setToDo("");
-      const ID = uuidv1();
-      const newToDoObject = {
-        [ID]: {
-          id: ID,
+  const [toDos, setTodos] = useState<ITodos>({});
+
+  const _AddTodo = (): void => {
+    if (newToDo !== '') {
+      const id = uuidv1();
+
+      setToDo('');
+      _saveToDos({
+        ...toDos,
+        [id]: {
+          id,
           isCompleted: false,
           text: newToDo,
-          createdAt: Date.now()
-        }
-      };
-      let newToDos = {...toDos, ...newToDoObject};
-      setTodos(newToDos);
-      _saveToDos(newToDos);
+          createdAt: Date.now(),
+        },
+      });
     }
   };
+
   const _deleteToDo = (id: string): void => {
-    var _toDos = {...toDos};
+    let _toDos = {...toDos};
     delete _toDos[id];
-    setTodos(_toDos);
     _saveToDos(_toDos);
   };
-  const _uncompleteToDo = (id: string) => {
+
+  const _updateCompleteTodo = (id: string, isCompleted: boolean): void => {
+    _saveToDos({
+      ...toDos,
+      [id]: {
+        ...toDos[id],
+        isCompleted,
+      },
+    });
+  };
+
+  const _updateToDo = (id: string, text: string): void => {
     const newToDos = {
       ...toDos,
-      [id]: { ...toDos[id], isCompleted: false }
+      [id]: {...toDos[id], text: text},
     };
+    _saveToDos(newToDos);
+  };
+
+  const _saveToDos = (newToDos: ITodos): void => {
     setTodos(newToDos);
-    _saveToDos(newToDos.toDos);
+    AsyncStorage.setItem('toDos', JSON.stringify(newToDos));
   };
-  const _completeToDo = (id: string) => {
-    const newToDos = {
-      ...toDos,
-      [id]: { ...toDos[id], isCompleted: true }
-    };
-    setTodos(newToDos);
-    _saveToDos(newToDos.toDos);
-  };
-  const _updateToDo = (id: string, text: string) => {
-    const newToDos = {
-      ...toDos,
-      [id]: { ...toDos[id], text: text }
-    };
-    setTodos(newToDos);
-    _saveToDos(newToDos.toDos);
-  };
-  const _saveToDos = (newToDos: object) => {
-    const saveToDos = AsyncStorage.setItem("toDos", JSON.stringify(newToDos));
-  };
-  const _loadTodos = async() => {
+
+  const _loadTodos = async () => {
     try {
-      const toDos = await AsyncStorage.getItem("toDos");
+      const toDos = await AsyncStorage.getItem('toDos');
       if (toDos) {
         const parsedToDos = JSON.parse(toDos);
         setTodos(parsedToDos);
@@ -110,9 +111,10 @@ const App = () => {
       console.log(err);
     }
   };
+
   useEffect(() => {
     _loadTodos();
-  });
+  }, []);
 
   return (
     <Container>
@@ -120,9 +122,9 @@ const App = () => {
       <Text>Kawaii To Do</Text>
       <Card>
         <TextInput
-          placeholder={"New To Do"} 
+          placeholder={'New To Do'}
           onChangeText={text => setToDo(text)}
-          value={newToDo} 
+          value={newToDo}
           placeholderTextColor={'#999'}
           returnKeyType={'done'}
           autoCorrect={false}
@@ -130,13 +132,13 @@ const App = () => {
         />
         <ScrollView>
           {Object.values(toDos).map(toDo => (
-            <TodoListContainer 
-              id={toDo.id} 
-              text={toDo.text} 
-              isCompleted={toDo.isCompleted} 
+            <TodoListContainer
+              key={toDo.id}
+              id={toDo.id}
+              text={toDo.text}
+              isCompleted={toDo.isCompleted}
               deleteToDo={_deleteToDo}
-              uncompleteToDo={_uncompleteToDo}
-              completeToDo={_completeToDo}
+              updateCompleteTodo={_updateCompleteTodo}
               updateToDo={_updateToDo}
             />
           ))}
